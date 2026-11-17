@@ -1515,7 +1515,11 @@ class Union(Set, LatticeOp):
         return all(arg.is_iterable for arg in self.args)
 
     def __iter__(self):
-        return roundrobin(*(iter(arg) for arg in self.args))
+        seen = set()
+        for item in roundrobin(*(iter(arg) for arg in self.args)):
+            if item not in seen:
+                seen.add(item)
+                yield item
 
 
 class Intersection(Set, LatticeOp):

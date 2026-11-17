@@ -314,11 +314,24 @@ def test_union_interval_symbolic_endpoints():
 
 
 def test_union_iter():
+    from itertools import islice
+
     # Use Range because it is ordered
     u = Union(Range(3), Range(5), Range(4), evaluate=False)
+    assert list(u) == [0, 1, 2, 3, 4]
 
-    # Round robin
-    assert list(u) == [0, 0, 0, 1, 1, 1, 2, 2, 2, 3, 3, 4]
+    # issue 31145
+    u = Union(Range(0, 5), Range(3, 8))
+    assert list(u) == [0, 3, 1, 4, 2, 5, 6, 7]
+    assert sum(u) == 28
+
+    # disjoint ranges
+    u = Union(Range(0, 4, 2), Range(1, 5, 2))
+    assert list(u) == [0, 1, 2, 3]
+
+    # infinite sets
+    u = Union(Range(0, oo, 2), Range(0, oo, 3))
+    assert list(islice(u, 8)) == [0, 2, 3, 4, 6, 9, 8, 12]
 
 
 def test_union_is_empty():
